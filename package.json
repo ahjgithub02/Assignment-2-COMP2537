@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "dev": "nodemon assignment2.js",
+    "start": "node assignment2.js"
+  },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "connect-mongo": "^5.1.0",
