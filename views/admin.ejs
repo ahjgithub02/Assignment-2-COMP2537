@@ -1,0 +1,50 @@
+<%- include('templates/header') %>
+
+<div class="container mt-5">
+    <h1 class="mb-4">Admin Panel</h1>
+    
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Users</h2>
+        </div>
+        
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Current Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% users.forEach(user => { %>
+                    <tr>
+                        <td><%= user.name %></td>
+                        <td><%= user.email %></td>
+                        <td><span class="badge <%= user.type === 'admin' ? 'bg-success' : 'bg-secondary' %>">
+                            <%= user.type || 'user' %>
+                        </span></td>
+                        <td>
+                            <% if (user.type !== 'admin') { %>
+                                <form action="/admin/promote" method="POST" class="d-inline">
+                                    <input type="hidden" name="userId" value="<%= user._id %>">
+                                    <button type="submit" class="btn btn-sm btn-success">Promote to Admin</button>
+                                </form>
+                            <% } else { %>
+                                <form action="/admin/demote" method="POST" class="d-inline">
+                                    <input type="hidden" name="userId" value="<%= user._id %>">
+                                    <button type="submit" class="btn btn-sm btn-warning">Demote to User</button>
+                                </form>
+                            <% } %>
+                        </td>
+                    </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<%- include('templates/footer') %>
