@@ -1,0 +1,11 @@
+<%- include("templates/header") %>
+    <% if (loggedInConfirmation) { %>
+        <p>Hello, <%= name %>!</p>
+        <a href="/members">Members Area</a> |
+        <a href="/logout">Log Out</a>
+    <% } else { %>
+        <p>Welcome! Please Sign up or Login!</p>
+        <a href="/signup">Sign Up</a>
+        <a href="/login">Login</a>
+    <% } %> 
+<%- include("templates/footer") %>
