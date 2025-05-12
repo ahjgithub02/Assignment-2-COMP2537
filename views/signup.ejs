@@ -1,9 +1,24 @@
 <%- include("templates/header") %>
-    <p>create user</p>
-    <form action="/signupSubmit" method="post" class="form-parent-container" id="registerForm">
-        <input name="name" type="text" placeholder="name" />
-        <input name="email" type="email" placeholder="email" />
-        <input name="password" type="password" placeholder="password" />
-        <button>Submit</button>
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Create an Account</h2>
+    <form action="/signupSubmit" method="post" class="mx-auto" style="max-width: 400px;">
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input name="name" type="text" class="form-control" id="name" placeholder="Enter your name" required>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input name="email" type="email" class="form-control" id="email" placeholder="Enter your email" required>
+        </div>
+        <div class="mb-4">
+            <label for="password" class="form-label">Password</label>
+            <input name="password" type="password" class="form-control" id="password" placeholder="Create a password" required>
+        </div>
+        <div class="d-grid">
+            <button type="submit" class="btn btn-success">Sign Up</button>
+        </div>
     </form>
+</div>
+
 <%- include("templates/footer") %>

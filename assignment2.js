@@ -50,12 +50,13 @@ async function start() {
             res.render('index', {
                 loggedInConfirmation: req.session.user ? true : false,
                 name: req.session.user?.name || '',
-                isAdmin: req.session.user?.type === 'admin' || false
+                isAdmin: req.session.user?.type === 'admin' || false,
+                page: 'home'
             });
         });
 
         app.get('/signup', (req, res) => {
-            res.render('signup');
+            res.render('signup',  { page: 'signup', loggedInConfirmation: req.session.loggedIn, isAdmin: req.session.isAdmin });
         });
 
         app.post('/signupSubmit', async (req, res) => {
@@ -70,22 +71,26 @@ async function start() {
                 if (error) {
                     return res.send(`<p>${error.message}</p><a href="/signup">Try again</a>`);
                 }
+
+                const { name, email, password } = value;
                 const normalizedEmail = email.toLowerCase();
                 const existingUser = await client.db().collection('users').findOne({ email: normalizedEmail });
                 if (existingUser) {
                     return res.send('<p>Email already registered.</p><a href="/signup">Try again</a>');
                 }
-                const { name, email, password } = value;
-
                 const hashcode = await bcrypt.hash(password, 10);
                 await client.db().collection('users')
                     .insertOne({
                         name,
-                        email,
+                        email: normalizedEmail,
                         password: hashcode,
                         type: 'user'
                     });
-                req.session.user = { name, email, type: 'user' };
+                req.session.user = { 
+                    name, 
+                    email: normalizedEmail, 
+                    type: 'user' 
+                };
                 res.redirect('/members');
 
             } catch (err) {
@@ -95,7 +100,7 @@ async function start() {
         });
 
         app.get('/login', (req, res) => {
-            res.render('login');
+            res.render('login',  { page: 'login', loggedInConfirmation: req.session.loggedIn, isAdmin: req.session.isAdmin });
         });
 
         app.post('/loginSubmit', async (req, res) => {
@@ -120,18 +125,14 @@ async function start() {
                     return res.send('<p>Invalid email/password combination</p><a href="/login">Try again</a>');
                 }
 
-                req.session.user = {  // Changed from just storing name to full user object
-                    id: user._id,     // Needed for admin operations
+                req.session.user = {
+                    id: user._id,
                     name: user.name,
                     email: user.email,
-                    type: user.type || 'user'  // Default to 'user' if type doesn't exist
+                    type: user.type || 'user'
                 };
 
-                if (req.session.user.type === 'admin') {
-                    res.redirect('/admin');
-                } else {
-                    res.redirect('/members');
-                }
+                res.redirect('/members');
 
             } catch (err) {
                 console.error(err);
@@ -144,14 +145,12 @@ async function start() {
                 return res.redirect('/');
             }
 
-            // Select one random image filename
-            const images = ['beautiful_squidward.jpg', 'chicken_spongebob.webp', 'imagination.webp'];
-            const randomImage = images[Math.floor(Math.random() * images.length)];
-
             // Render the members page with user name and random image
             res.render('members', {
                 user: req.session.user.name,
-                randomImage: randomImage
+                page: 'members', 
+                loggedInConfirmation: true,
+                isAdmin: req.session.user.type === 'admin'
             });
         });
 
@@ -171,14 +170,17 @@ async function start() {
                 return res.redirect('/login');
             }
             if (req.session.user.type !== 'admin') {
-                return res.status(403).render('error', {
-                    message: 'You are not authorized to view this page'
-                });
+                return res.status(403).render('403', { page: '403' });
             }
 
             try {
                 const users = await client.db().collection('users').find().toArray();
-                res.render('admin', { users: users });
+                res.render('admin', {
+                    users: users,
+                    loggedInConfirmation: true,
+                    isAdmin: true,
+                    page: 'admin' 
+                });
             } catch (err) {
                 console.error(err);
                 res.status(500).render('error', { message: 'Database error' });
@@ -215,7 +217,7 @@ async function start() {
                 });
         
                 if (!targetUser) {
-                    return res.status(404).render('error', { message: 'User not found' });
+                    res.status(404).render('404', { page: '404' });
                 }
         
                 if (targetUser.email === req.session.user.email) {
@@ -236,7 +238,7 @@ async function start() {
         });
 
         app.use((req, res) => {
-            res.status(404).send("Page not found - 404");
+            res.status(404).render('404', { page: '404' });
         });
 
         app.listen(port, () => {

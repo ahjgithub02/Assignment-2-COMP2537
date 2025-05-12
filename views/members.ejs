@@ -1,7 +1,23 @@
 <%- include("templates/header") %>
-    <h1>Hello, <%- user %>!</h1>
-    <div class="member-image-container">
-        <img src="/<%- randomImage %>" alt="Random Image" class="member-image">
+
+<div class="container text-center mt-5">
+    <h1 class="mb-4">Hello, <%= user %>!</h1>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col">
+            <img src="/beautiful_squidward.jpg" class="img-fluid rounded" alt="Beautiful Squidward">
+        </div>
+        <div class="col">
+            <img src="/chicken_spongebob.webp" class="img-fluid rounded" alt="Chicken Spongebob">
+        </div>
+        <div class="col">
+            <img src="/imagination.webp" class="img-fluid rounded" alt="Imagination">
+        </div>
     </div>
-    <a href="/Logout">Sign out</a>
+
+    <div class="mt-4">
+        <a href="/logout" class="btn btn-outline-danger">Sign Out</a>
+    </div>
+</div>
+
 <%- include("templates/footer") %>
